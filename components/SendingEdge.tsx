@@ -1,5 +1,5 @@
 import React from 'react';
-import { BaseEdge, getSmoothStepPath, type EdgeProps } from '@xyflow/react';
+import { BaseEdge, type EdgeProps } from '@xyflow/react';
 
 export type GetSendingEdgeParams = {
     sourceX: number;
@@ -21,8 +21,6 @@ export default function SendingEdge({
     sourceY,
     targetX,
     targetY,
-    sourcePosition,
-    targetPosition,
     markerEnd,
     style,
     animated

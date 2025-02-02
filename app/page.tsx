@@ -104,9 +104,9 @@ export default function Home() {
     const initialNodes: Node[] = [];
 
     const maxHeight = Math.max(servers.length, clients.length);
-    let clientPad = (maxHeight - clients.length) * 50;
-    let serverPad = (maxHeight - servers.length) * 50;
-    let lbPad = maxHeight * 50 + 50;
+    const clientPad = (maxHeight - clients.length) * 50;
+    const serverPad = (maxHeight - servers.length) * 50;
+    const lbPad = maxHeight * 50 + 50;
 
     initialNodes.push(...initialServers.map((server, i) => {
       return {
@@ -174,7 +174,7 @@ export default function Home() {
 
     const initialEdges: Edge[] = [];
 
-    initialServers.map((server, i) => {
+    initialServers.map((server) => {
       initialEdges.push({
         id: `lb-s${server.id}`,
         source: `lb`,
@@ -182,7 +182,7 @@ export default function Home() {
       })
     });
 
-    clients.map((client, i) => {
+    clients.map((client) => {
       initialEdges.push({
         id: `c${client.id}-lb`,
         source: `c${client.id}`,
@@ -229,12 +229,11 @@ export default function Home() {
   const [tempRateCache, setTempRateCache] = useState<number[]>([]);
   const [requestRateCache, setRequestRateCache] = useState<number[]>([]);
 
-  const [fileSizeCache, setFileSizeCache] = useState<number[]>([]);
-  const [requestCounterBuffer, setRequestCounterBuffer] = useState<Request[]>([]);
+  const [, setRequestCounterBuffer] = useState<Request[]>([]);
   const [requestCounter, setRequestCounter] = useState<number[]>([]);
-  const [timeoutCounterBuffer, setTimeoutCounterBuffer] = useState<Data[]>([]);
+  const [, setTimeoutCounterBuffer] = useState<Data[]>([]);
   const [timeoutCounter, setTimeoutCounter] = useState<number[]>([]);
-  const [processRateCounterBuffer, setProcessRateCounterBuffer] = useState<Data[]>([]);
+  const [, setProcessRateCounterBuffer] = useState<Data[]>([]);
   const [processRateCounter, setProcessRateCounter] = useState<number[]>([]);
 
   const [filesizeCounter, setFilesizeCounter] = useState<number[]>([]);
@@ -245,7 +244,7 @@ export default function Home() {
     if (!running) {
       setEdges((edges) => edges.filter((e) => !e.id.match(/[0-9a-zA-Z]{8}-[0-9a-zA-Z]/)))
     }
-  }, [running]);
+  }, [running, setEdges]);
 
   const nextPoisson = (lambda: number) => {
     let xp = Math.random();
@@ -258,7 +257,7 @@ export default function Home() {
   };
 
   const setRequestRate = async (rate: number) => {
-    let tempCache = tempRateCache;
+    const tempCache = tempRateCache;
     if (tempCache.length == 0) {
       for (let i = 0; i < 500; i++) {
         tempCache.push(nextPoisson(100) / 100);
@@ -276,7 +275,7 @@ export default function Home() {
     // tempCacheをシャッフル
     for (let i = tempCache.length - 1; i > 0; i--) {
       const r = Math.floor(Math.random() * (i + 1));
-      let tmp = tempCache[i];
+      const tmp = tempCache[i];
       tempCache[i] = tempCache[r];
       tempCache[r] = tmp;
     }
@@ -340,7 +339,7 @@ export default function Home() {
     }
   };
 
-  const getFileSize = (path: string) => {
+  const getFileSize = () => {
     return Math.round(normRand());
   };
 
@@ -353,9 +352,7 @@ export default function Home() {
   };
 
 
-  const [temp1, setTemp1] = useState<string[]>([]);
-  const [delEdge, setDelEdge] = useState<string[]>([]);
-  const delEdgeRef = useRef(delEdge);
+  const [, setDelEdge] = useState<string[]>([]);
 
   const startSimulation = () => {
     setRunning(true);
@@ -366,7 +363,7 @@ export default function Home() {
       setTimeout(() => send(client), getNextDelay())
     });
     const calcRate = config.throughput / 100;
-    const interval = setInterval((handler, timeout) => {
+    const interval = setInterval(() => {
       if (!runningRef.current) {
         clearInterval(interval);
       }
@@ -502,7 +499,7 @@ export default function Home() {
             if (sv.id == server) {
               const newData = {
                 id: data.id,
-                size: getFileSize(data.path),
+                size: getFileSize(),
                 source: data.source,
                 target: server,
                 createdAt: data.createdAt,
@@ -528,7 +525,7 @@ export default function Home() {
         queue: lb.queue
       }
     })
-  }, [loadbalancer.queue])
+  }, [loadbalancer.queue, config.mode, config.timeout, getFileSize, loadbalancer.lastServer, servers])
 
 
   const addServer = () => {
@@ -611,15 +608,10 @@ export default function Home() {
 
 
   const updateFlow = () => {
-    console.log(servers);
     const maxHeight = Math.max(servers.length, clients.length);
-    let clientPad = (maxHeight - clients.length) * 50 + 100;
-    console.log(clientPad)
-    console.log(maxHeight)
-    console.log(clients.length)
-    let serverPad = (maxHeight - servers.length) * 50 + 100;
-    console.log(clientPad)
-    let lbPad = maxHeight * 50 + 50;
+    const clientPad = (maxHeight - clients.length) * 50 + 100;
+    const serverPad = (maxHeight - servers.length) * 50 + 100;
+    const lbPad = maxHeight * 50 + 50;
     setNodes((nodes) => [...nodes.map((node) => {
       if (node.id == "lb") {
         return {
@@ -669,16 +661,16 @@ export default function Home() {
 
   useEffect(() => {
     updateFlow();
-  }, [servers.length, clients.length]);
+  }, [servers.length, clients.length, updateFlow]);
 
   useEffect(() => {
     reactflow?.fitView();
-  }, [nodes]);
+  }, [nodes, reactflow]);
 
-  const [temp, setTemp] = useState(0);
+  const [, setTemp] = useState(0);
   const [list, setList] = useState<number[]>([]);
   const [count, setCount] = useState<number[]>([]);
-  const [show, setShow] = useState(0);
+  const [, setShow] = useState(0);
 
 
   useEffect(() => {
@@ -687,7 +679,7 @@ export default function Home() {
     setRequestRate(config.requestRate);
 
 
-    setTemp((temp) => {
+    setTemp(() => {
       const n = nextPoisson(100);
       setList((l) => [...l, n]);
       setCount((c) => {
@@ -706,14 +698,14 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    setShow((s) => {
-      let sum = list.reduce((ss, el) => ss + el, 0);
+    setShow(() => {
+      const sum = list.reduce((ss, el) => ss + el, 0);
       return sum / list.length;
     })
-  }, [list]);
+  }, [list, setShow]);
 
 
-  const [data, setData] = useState<ChartData<"bar">>({
+  const [, setData] = useState<ChartData<"bar">>({
     labels: [list.map((j, i) => i)],
     datasets: [
       {
@@ -724,17 +716,6 @@ export default function Home() {
     ]
   });
 
-  const lineData: ChartData<"line"> = {
-    labels: requestCounter.map((v, i) => i.toString()),
-    datasets: [
-      {
-        label: "リクエスト数",
-        data: requestCounter,
-        borderColor: "green",
-        backgroundColor: "blue",
-      }
-    ]
-  };
 
   useEffect(() => {
     setData((d) => {
