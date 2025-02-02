@@ -668,7 +668,7 @@ export default function Home() {
 
   const [, setTemp] = useState(0);
   const [list, setList] = useState<number[]>([]);
-  const [count, setCount] = useState<number[]>([]);
+  const [, setCount] = useState<number[]>([]);
   const [, setShow] = useState(0);
 
 
