@@ -14,8 +14,7 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend,
-  ChartData
+  Legend
 } from "chart.js";
 import { Bar, Line } from "react-chartjs-2";
 import { Button, ButtonGroup, Slider } from "@heroui/react";
