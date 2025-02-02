@@ -244,7 +244,7 @@ export default function Home() {
     if (!running) {
       setEdges((edges) => edges.filter((e) => !e.id.match(/[0-9a-zA-Z]{8}-[0-9a-zA-Z]/)))
     }
-  }, [running, setEdges]);
+  }, [running]);
 
   const nextPoisson = (lambda: number) => {
     let xp = Math.random();
@@ -525,7 +525,7 @@ export default function Home() {
         queue: lb.queue
       }
     })
-  }, [loadbalancer.queue, config.mode, config.timeout, getFileSize, loadbalancer.lastServer, servers])
+  }, [loadbalancer.queue])
 
 
   const addServer = () => {
@@ -661,11 +661,11 @@ export default function Home() {
 
   useEffect(() => {
     updateFlow();
-  }, [servers.length, clients.length, updateFlow]);
+  }, [servers.length, clients.length]);
 
   useEffect(() => {
     reactflow?.fitView();
-  }, [nodes, reactflow]);
+  }, [nodes]);
 
   const [, setTemp] = useState(0);
   const [list, setList] = useState<number[]>([]);
@@ -702,42 +702,11 @@ export default function Home() {
       const sum = list.reduce((ss, el) => ss + el, 0);
       return sum / list.length;
     })
-  }, [list, setShow]);
+  }, [list]);
 
-
-  const [, setData] = useState<ChartData<"bar">>({
-    labels: [list.map((j, i) => i)],
-    datasets: [
-      {
-        label: "Data",
-        data: count,
-        backgroundColor: "red"
-      }
-    ]
-  });
-
-
-  useEffect(() => {
-    setData((d) => {
-      return {
-        ...d,
-        labels: count.map((j, i) => `${i}`),
-        datasets: [
-          {
-            label: "Data",
-            data: count
-          }
-        ]
-      }
-    })
-  }, [count, list]);
 
   const barOptions = {
     plugins: {
-      title: {
-        display: true,
-        text: 'Chart.js Bar Chart - Stacked',
-      },
     },
     responsive: true,
     scales: {
